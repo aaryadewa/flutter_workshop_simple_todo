@@ -11,7 +11,9 @@ class TodoListPage extends StatefulWidget {
 class TodoListPageState extends State<TodoListPage> {
 
   List<TodoModel> _todos = [
-    TodoModel('First Todo', 'Replace stateless with statefull widget')
+    TodoModel('First Todo', 'Replace stateless with statefull widget'),
+    TodoModel('Second Todo', 'Add more todo'),
+    TodoModel('Third Todo', 'Demonstrate the completed item', true)
   ];
 
   @override
@@ -32,8 +34,18 @@ class TodoListPageState extends State<TodoListPage> {
                 setState(() => todo.done = newValue);
               },
             ),
-            title: Text(todo.title),
-            subtitle: Text(todo.description),
+            title: Text(
+              todo.title,
+              style: TextStyle(
+                decoration: todo.done ? TextDecoration.none : TextDecoration.none
+              ),
+            ),
+            subtitle: Text(
+              todo.description,
+              style: TextStyle(
+                decoration: todo.done ? TextDecoration.lineThrough : TextDecoration.none
+              ),
+            ),
           );
         },
       ),
