@@ -1,7 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_workshop_simple_todo/data/model/todo_model.dart';
 
-class TodoListPage extends StatelessWidget {
+class TodoListPage extends StatefulWidget {
+
+  @override
+  State createState() => TodoListPageState();
+}
+
+class TodoListPageState extends State<TodoListPage> {
+
+  List<TodoModel> _todos = [
+    TodoModel('First Todo', 'Replace stateless with statefull widget')
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -9,17 +20,22 @@ class TodoListPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Todo List'),
       ),
-      body: ListView(
-        children: <Widget>[
-          ListTile(
+      body: ListView.builder(
+        itemCount: _todos.length,
+        itemBuilder: (context, index) {
+          final todo = _todos[index];
+
+          return ListTile(
             leading: Checkbox(
-              value: false,
-              onChanged: (newValue) => print('Todo checked: $newValue'),
+              value: todo.done,
+              onChanged: (newValue) {
+                setState(() => todo.done = newValue);
+              },
             ),
-            title: Text('First Todo'),
-            subtitle: Text('Short description about first todo'),
-          )
-        ],
+            title: Text(todo.title),
+            subtitle: Text(todo.description),
+          );
+        },
       ),
     );
   }
