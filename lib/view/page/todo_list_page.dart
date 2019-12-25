@@ -12,6 +12,10 @@ class TodoListPage extends StatelessWidget {
       body: ListView(
         children: <Widget>[
           ListTile(
+            leading: Checkbox(
+              value: false,
+              onChanged: (newValue) => print('Todo checked: $newValue'),
+            ),
             title: Text('First Todo'),
             subtitle: Text('Short description about first todo'),
           )
