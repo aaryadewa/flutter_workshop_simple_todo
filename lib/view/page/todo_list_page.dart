@@ -37,7 +37,7 @@ class TodoListPageState extends State<TodoListPage> {
             title: Text(
               todo.title,
               style: TextStyle(
-                decoration: todo.done ? TextDecoration.none : TextDecoration.none
+                decoration: todo.done ? TextDecoration.lineThrough : TextDecoration.none
               ),
             ),
             subtitle: Text(
