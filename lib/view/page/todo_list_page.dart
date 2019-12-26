@@ -10,45 +10,56 @@ class TodoListPage extends StatefulWidget {
 
 class TodoListPageState extends State<TodoListPage> {
 
+  final _appBar = AppBar(
+    title: Text('Todo List'),
+  );
+
   List<TodoModel> _todos = [
     TodoModel('First Todo', 'Replace stateless with statefull widget'),
     TodoModel('Second Todo', 'Add more todo'),
     TodoModel('Third Todo', 'Demonstrate the completed item', true)
   ];
 
+  TextDecoration _buildTextDecoration(bool isDone) {
+    return isDone ? TextDecoration.lineThrough : TextDecoration.none;
+  }
+
+  ListView _buildListView(List<TodoModel> todos) {
+    return ListView.builder(
+      itemCount: todos.length,
+      itemBuilder: (context, index) {
+        final todo = todos[index];
+        final textDecoration = _buildTextDecoration(todo.done);
+
+        return ListTile(
+          leading: Checkbox(
+            value: todo.done,
+            onChanged: (newValue) {
+              setState(() => todo.done = newValue);
+            },
+          ),
+          title: Text(
+            todo.title,
+            style: TextStyle(
+                decoration: textDecoration
+            ),
+          ),
+          subtitle: Text(
+            todo.description,
+            style: TextStyle(
+                decoration: textDecoration
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Todo List'),
-      ),
-      body: ListView.builder(
-        itemCount: _todos.length,
-        itemBuilder: (context, index) {
-          final todo = _todos[index];
-
-          return ListTile(
-            leading: Checkbox(
-              value: todo.done,
-              onChanged: (newValue) {
-                setState(() => todo.done = newValue);
-              },
-            ),
-            title: Text(
-              todo.title,
-              style: TextStyle(
-                decoration: todo.done ? TextDecoration.lineThrough : TextDecoration.none
-              ),
-            ),
-            subtitle: Text(
-              todo.description,
-              style: TextStyle(
-                decoration: todo.done ? TextDecoration.lineThrough : TextDecoration.none
-              ),
-            ),
-          );
-        },
-      ),
+      appBar: _appBar,
+      body: _buildListView(_todos)
     );
   }
 }
