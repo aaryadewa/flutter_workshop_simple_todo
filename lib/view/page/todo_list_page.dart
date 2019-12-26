@@ -1,24 +1,34 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_workshop_simple_todo/data/datasource/todo_datasource.dart';
 import 'package:flutter_workshop_simple_todo/data/model/todo_model.dart';
 
 class TodoListPage extends StatefulWidget {
 
+  final TodoDatasource _datasource;
+
+  TodoListPage({
+    Key key,
+    @required TodoDatasource datasource
+  })
+    : _datasource = datasource,
+      super(key: key);
+
   @override
-  State createState() => TodoListPageState();
+  State createState() => TodoListPageState(datasource: _datasource);
 }
 
 class TodoListPageState extends State<TodoListPage> {
 
+  final TodoDatasource _datasource;
+  Future<List<TodoModel>> _todos;
+
+  TodoListPageState({
+    @required TodoDatasource datasource
+  }) : _datasource = datasource;
+
   final _appBar = AppBar(
     title: Text('Todo List'),
   );
-
-  List<TodoModel> _todos = [
-    TodoModel('First Todo', 'Replace stateless with statefull widget'),
-    TodoModel('Second Todo', 'Add more todo'),
-    TodoModel('Third Todo', 'Demonstrate the completed item', true)
-  ];
 
   TextDecoration _buildTextDecoration(bool isDone) {
     return isDone ? TextDecoration.lineThrough : TextDecoration.none;
@@ -56,10 +66,22 @@ class TodoListPageState extends State<TodoListPage> {
   }
 
   @override
+  void initState() {
+    _todos = _datasource.getTodos();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar,
-      body: _buildListView(_todos)
+      body: FutureBuilder(
+        future: _todos,
+        builder: (context, snapshot) {
+          final isComplete = snapshot.hasData && snapshot.connectionState == ConnectionState.done;
+          return isComplete ? _buildListView(snapshot.data) : LinearProgressIndicator();
+        }
+      )
     );
   }
 }

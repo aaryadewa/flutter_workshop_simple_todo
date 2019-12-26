@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_workshop_simple_todo/data/datasource/todo_datasource.dart';
 import 'package:flutter_workshop_simple_todo/view/page/todo_list_page.dart';
 
 void main() => runApp(MyApp());
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: TodoListPage(),
+      home: TodoListPage(datasource: TodoDatasource()),
     );
   }
 }
