@@ -62,6 +62,10 @@ class TodoListPageState extends State<TodoListPage> {
                 decoration: textDecoration
             ),
           ),
+          trailing: IconButton(
+              icon: Icon(Icons.cancel),
+              onPressed: () => print('remove todo #${todo.id}')
+          ),
         );
       },
     );
