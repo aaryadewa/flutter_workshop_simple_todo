@@ -10,14 +10,14 @@ class TodoDatasource {
 
   Future<List<TodoModel>> getTodos() async {
     final response = await http.get(_url);
-    List<TodoModel> _todos = [];
+    List<TodoModel> todos = [];
 
     if (response.statusCode == HttpStatus.ok) {
       final List<dynamic> json = jsonDecode(response.body);
-      _todos = json.map((item) => TodoModel.fromJson(item)).toList();
+      todos = json.map((item) => TodoModel.fromJson(item)).toList();
     }
 
-    return Future.delayed(Duration(seconds: 2), () => _todos);
+    return todos;
   }
 
   Future<TodoModel> addTodo(TodoModel todo) async {

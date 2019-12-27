@@ -21,15 +21,16 @@ class TodoListPage extends StatefulWidget {
 class TodoListPageState extends State<TodoListPage> {
 
   final TodoDatasource _datasource;
-  Future<List<TodoModel>> _todos;
-
-  TodoListPageState({
-    @required TodoDatasource datasource
-  }) : _datasource = datasource;
+  List<TodoModel> _todos = [];
+  bool _isLoading = false;
 
   final _appBar = AppBar(
     title: const Text('Todo List'),
   );
+
+  TodoListPageState({
+    @required TodoDatasource datasource
+  }) : _datasource = datasource;
 
   TextDecoration _buildTextDecoration(bool isDone) {
     return isDone ? TextDecoration.lineThrough : TextDecoration.none;
@@ -83,11 +84,16 @@ class TodoListPageState extends State<TodoListPage> {
     );
 
     if (todo != null) {
+      setState(() {
+        _isLoading = true;
+      });
+
       final savedTodo = await _datasource.addTodo(todo);
-      print('saved todo: $savedTodo');
+
       if (savedTodo.id > 0) {
         setState(() {
-          _todos = _datasource.getTodos();
+          _todos.add(savedTodo);
+          _isLoading = false;
         });
       }
     }
@@ -95,7 +101,14 @@ class TodoListPageState extends State<TodoListPage> {
 
   @override
   void initState() {
-    _todos = _datasource.getTodos();
+    _isLoading = true;
+    _datasource.getTodos().then((todos) {
+      setState(() {
+        _todos = todos;
+        _isLoading = false;
+      });
+    });
+
     super.initState();
   }
 
@@ -103,12 +116,11 @@ class TodoListPageState extends State<TodoListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar,
-      body: FutureBuilder(
-        future: _todos,
-        builder: (context, snapshot) {
-          final isComplete = snapshot.hasData && snapshot.connectionState == ConnectionState.done;
-          return isComplete ? _buildListView(snapshot.data) : LinearProgressIndicator();
-        }
+      body: Stack(
+        children: <Widget>[
+          _buildListView(_todos),
+          _isLoading ? LinearProgressIndicator() : Container()
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
