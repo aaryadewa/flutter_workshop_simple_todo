@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_workshop_simple_todo/data/datasource/todo_datasource.dart';
 import 'package:flutter_workshop_simple_todo/data/model/todo_model.dart';
+import 'package:flutter_workshop_simple_todo/view/widget/todo_form.dart';
 
 class TodoListPage extends StatefulWidget {
 
@@ -27,7 +28,7 @@ class TodoListPageState extends State<TodoListPage> {
   }) : _datasource = datasource;
 
   final _appBar = AppBar(
-    title: Text('Todo List'),
+    title: const Text('Todo List'),
   );
 
   TextDecoration _buildTextDecoration(bool isDone) {
@@ -65,6 +66,33 @@ class TodoListPageState extends State<TodoListPage> {
     );
   }
 
+  Future<void> _newTodo(BuildContext context) async {
+    final todo = await showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: Text('Add Todo'),
+          children: <Widget>[
+            Padding(
+              child: TodoForm(),
+              padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
+            )
+          ],
+        );
+      }
+    );
+
+    if (todo != null) {
+      final savedTodo = await _datasource.addTodo(todo);
+      print('saved todo: $savedTodo');
+      if (savedTodo.id > 0) {
+        setState(() {
+          _todos = _datasource.getTodos();
+        });
+      }
+    }
+  }
+
   @override
   void initState() {
     _todos = _datasource.getTodos();
@@ -81,6 +109,11 @@ class TodoListPageState extends State<TodoListPage> {
           final isComplete = snapshot.hasData && snapshot.connectionState == ConnectionState.done;
           return isComplete ? _buildListView(snapshot.data) : LinearProgressIndicator();
         }
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () async => await _newTodo(context),
+        tooltip: 'Add',
       )
     );
   }
